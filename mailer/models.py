@@ -53,9 +53,14 @@ class MessageManager(models.Manager):
     
         return self.filter(priority="4")
     
-    def retry_deferred(self, new_priority=2):
+    def retry_deferred(self, new_priority=2, limit=None):
         count = 0
-        for message in self.deferred():
+
+        messages = self.deferred()
+        if limit:
+            messages = messages[:limit]
+
+        for message in messages:
             if message.retry(new_priority):
                 count += 1
         return count
